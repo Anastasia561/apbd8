@@ -13,6 +13,7 @@ public class ClientRepository : IClientRepository
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
+    //Inserting a new registration of client for a trip with registration date set to current one
     public async Task UpdateClientTripAsync(int clientId, int tripId, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -30,6 +31,7 @@ public class ClientRepository : IClientRepository
         await con.DisposeAsync();
     }
 
+    //Creating a new record of client in DB
     public async Task<int> CreateClientAsync(Client client, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -50,6 +52,8 @@ public class ClientRepository : IClientRepository
         return result;
     }
 
+    //Getting trips specific client is registered for
+    //validation for existence of trips and client is used
     public async Task<IEnumerable<ClientTrip>> GetClientTripAsync(int id, CancellationToken cancellationToken)
     {
         if (!await CheckIfClientExistsAsync(id, cancellationToken))
@@ -65,6 +69,8 @@ public class ClientRepository : IClientRepository
         return await GetClientWithTripsAsync(id, cancellationToken);
     }
 
+    //selecting all trips specific client is registered for 
+    //(selecting id of trip, registration and payment dates)
     private async Task<IEnumerable<ClientTrip>> GetClientWithTripsAsync(int id, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -92,6 +98,7 @@ public class ClientRepository : IClientRepository
         return clientTrips;
     }
 
+    //checking if client with provided id exists in a system
     public async Task<bool> CheckIfClientExistsAsync(int id, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -106,6 +113,7 @@ public class ClientRepository : IClientRepository
         return result > 0;
     }
 
+    //checking if specific client has any trips they are registered for
     private async Task<bool> CheckIfClientHasTripsAsync(int id, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -120,6 +128,7 @@ public class ClientRepository : IClientRepository
         return result > 0;
     }
 
+    //deleting a record of client registration in client_trip table
     public async Task DeleteClientRegistrationAsync(int clientId, int tripId, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -133,6 +142,8 @@ public class ClientRepository : IClientRepository
         await con.DisposeAsync();
     }
 
+    //checking if specific client with provided id has a registration record in
+    //client_trip table with provided trip id
     public async Task<bool> CheckIfRegistrationExistsAsync(int clientId, int tripId,
         CancellationToken cancellationToken)
     {

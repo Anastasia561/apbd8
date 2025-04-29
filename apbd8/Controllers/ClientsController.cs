@@ -18,6 +18,8 @@ public class ClientsController : ControllerBase
         _clientService = clientService;
     }
 
+//Endpoint for getting a list of all trips along with destination coutries
+//for a specific client (trips they are registered for)
     [HttpGet("{id}/trips")]
     public async Task<IActionResult> GetClientTripsAsync(int id)
     {
@@ -27,6 +29,9 @@ public class ClientsController : ControllerBase
         return Ok(result);
     }
 
+//Endpoint for creating new client record
+//with parameters - firstName, lastName, email, phone number, PESEL number
+//input parameters (email, phone number, PESEL number) are validated for correct format
     [HttpPost]
     public async Task<IActionResult> CreateClientAsync(ClientCreateRequestDto clientDto,
         CancellationToken cancellationToken)
@@ -35,6 +40,8 @@ public class ClientsController : ControllerBase
         return Ok(result);
     }
 
+//endpoint for registering existing client for an existing trip
+//input ids of client and trip are validated to be present in DB
     [HttpPut("{id}/trips/{tripId}")]
     public async Task<IActionResult> RegisterForTripAsync(int id, int tripId, CancellationToken cancellationToken)
     {
@@ -45,6 +52,8 @@ public class ClientsController : ControllerBase
         return Ok();
     }
 
+//Endpoint for deleting registration of an existing client for an existing trip
+//input ids of client and trip are validated to be present in DB
     [HttpDelete("{id}/trips/{tripId}")]
     public async Task<IActionResult> UnregisterForTripAsync(int id, int tripId, CancellationToken cancellationToken)
     {

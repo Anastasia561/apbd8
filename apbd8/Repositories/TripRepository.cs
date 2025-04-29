@@ -12,6 +12,7 @@ public class TripRepository : ITripRepository
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
+    //checking if trip with provided id exists in a system
     public async Task<bool> CheckIfTripExistsAsync(int id, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -26,6 +27,8 @@ public class TripRepository : ITripRepository
         return result > 0;
     }
 
+    //checking if a number of people registered for a trip with provided id
+    //is greater or equal to the maximum number of people allowed for this trip
     public async Task<bool> CheckIfTripHasMaxPeopleAsync(int id, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -40,6 +43,7 @@ public class TripRepository : ITripRepository
         return peopleRegistered >= maxPeople;
     }
 
+    //selecting maximum number of people allowed to be registered for a trip with provided id
     private async Task<int> GetMaxNumberOfPeopleForTripAsync(int id, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
@@ -53,6 +57,9 @@ public class TripRepository : ITripRepository
         return result;
     }
 
+    //selecting all trips available in a system
+    //first select only trip info without country list
+    //then from table country_trip select list of countries available for trip with that id
     public async Task<IEnumerable<Trip>> GetTripsAsync(CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);

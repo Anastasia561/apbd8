@@ -16,6 +16,8 @@ public class TripsController : ControllerBase
         _tripService = tripService;
     }
 
+//Endpoint for getting a list of all available trips in the system
+//along with destination countries
     [HttpGet]
     public async Task<IActionResult> GetTripsAsync()
     {
