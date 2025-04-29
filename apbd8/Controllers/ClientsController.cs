@@ -44,4 +44,11 @@ public class ClientsController : ControllerBase
         await _clientService.RegisterClientForTripAsync(id, tripId, cancellationToken);
         return Ok();
     }
+
+    [HttpDelete("{id}/trips/{tripId}")]
+    public async Task<IActionResult> UnregisterForTripAsync(int id, int tripId, CancellationToken cancellationToken)
+    {
+        await _clientService.DeleteClientRegistrationAsync(id, tripId, cancellationToken);
+        return Ok();
+    }
 }

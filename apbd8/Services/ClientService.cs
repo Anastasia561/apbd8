@@ -40,4 +40,15 @@ public class ClientService : IClientService
     {
         await _clientRepository.UpdateClientTripAsync(clientId, tripId, cancellationToken);
     }
+
+    public async Task DeleteClientRegistrationAsync(int clientId, int tripId, CancellationToken cancellationToken)
+    {
+        if (!await _clientRepository.CheckIfRegistrationExistsAsync(clientId, tripId, cancellationToken))
+        {
+            throw new ArgumentException(
+                $"registration for client with id-{clientId} and trip with id-{tripId} does not exist");
+        }
+
+        await _clientRepository.DeleteClientRegistrationAsync(clientId, tripId, cancellationToken);
+    }
 }

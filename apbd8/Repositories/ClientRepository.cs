@@ -27,6 +27,7 @@ public class ClientRepository : IClientRepository
         com.Parameters.AddWithValue("@idTrip", tripId);
         com.Parameters.AddWithValue("@registeredAt", registeredAt);
         await com.ExecuteNonQueryAsync(cancellationToken);
+        await con.DisposeAsync();
     }
 
     public async Task<int> CreateClientAsync(Client client, CancellationToken cancellationToken)
@@ -115,6 +116,34 @@ public class ClientRepository : IClientRepository
 
         var result = (int)await com.ExecuteScalarAsync(cancellationToken);
 
+        await con.DisposeAsync();
+        return result > 0;
+    }
+
+    public async Task DeleteClientRegistrationAsync(int clientId, int tripId, CancellationToken cancellationToken)
+    {
+        var con = new SqlConnection(_connectionString);
+        await con.OpenAsync(cancellationToken);
+
+        var com = new SqlCommand("delete from Client_Trip where IdTrip=@tripId and IdClient=@clientId", con);
+        com.Parameters.AddWithValue("@tripId", tripId);
+        com.Parameters.AddWithValue("@clientId", clientId);
+
+        await com.ExecuteNonQueryAsync(cancellationToken);
+        await con.DisposeAsync();
+    }
+
+    public async Task<bool> CheckIfRegistrationExistsAsync(int clientId, int tripId,
+        CancellationToken cancellationToken)
+    {
+        var con = new SqlConnection(_connectionString);
+        await con.OpenAsync(cancellationToken);
+
+        var com = new SqlCommand("select count(*) from Client_Trip where IdTrip=@tripId and IdClient=@clientId", con);
+        com.Parameters.AddWithValue("@tripId", tripId);
+        com.Parameters.AddWithValue("@clientId", clientId);
+
+        var result = (int)await com.ExecuteScalarAsync(cancellationToken);
         await con.DisposeAsync();
         return result > 0;
     }

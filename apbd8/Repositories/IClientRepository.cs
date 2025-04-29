@@ -8,4 +8,6 @@ public interface IClientRepository
     public Task<int> CreateClientAsync(Client client, CancellationToken cancellationToken);
     public Task UpdateClientTripAsync(int clientId, int tripId, CancellationToken cancellationToken);
     public Task<bool> CheckIfClientExistsAsync(int id, CancellationToken cancellationToken);
+    public Task DeleteClientRegistrationAsync(int clientId, int tripId, CancellationToken cancellationToken);
+    public Task<bool> CheckIfRegistrationExistsAsync(int clientId, int tripId, CancellationToken cancellationToken);
 }
