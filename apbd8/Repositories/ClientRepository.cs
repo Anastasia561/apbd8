@@ -13,16 +13,36 @@ public class ClientRepository : IClientRepository
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
+    public async Task<int> CreateClient(Client client, CancellationToken cancellationToken)
+    {
+        var con = new SqlConnection(_connectionString);
+        await con.OpenAsync(cancellationToken);
+
+        var com = new SqlCommand("insert into client(FirstName, LastName, Email, Telephone, Pesel)" +
+                                 "values (@firstName, @lastName, @email, @phone, @pesel); select cast(scope_identity() as int);",
+            con);
+        com.Parameters.AddWithValue("@firstName", client.FirstName);
+        com.Parameters.AddWithValue("@lastName", client.LastName);
+        com.Parameters.AddWithValue("@email", client.Email);
+        com.Parameters.AddWithValue("@phone", client.Phone);
+        com.Parameters.AddWithValue("@pesel", client.Pesel);
+
+        var result = (int)await com.ExecuteScalarAsync(cancellationToken);
+
+        await con.DisposeAsync();
+        return result;
+    }
+
     public async Task<IEnumerable<ClientTrip>> GetClientTripAsync(int id, CancellationToken cancellationToken)
     {
         if (!await CheckIfClientExistsAsync(id, cancellationToken))
         {
-            throw new Exception($"Client with id - {id} not found");
+            throw new ArgumentException($"Client with id - {id} not found");
         }
 
         if (!await CheckIfClientHasTripsAsync(id, cancellationToken))
         {
-            throw new Exception($"Client with id - {id} has no trips");
+            throw new ArgumentException($"Client with id - {id} has no trips");
         }
 
         return await GetClientWithTripsAsync(id, cancellationToken);

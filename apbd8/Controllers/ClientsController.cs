@@ -1,4 +1,5 @@
-﻿using apbd8.Services;
+﻿using apbd8.Model.Dto;
+using apbd8.Services;
 using apbd8.Services.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,15 @@ public class ClientsController : ControllerBase
     {
         var trips = await _tripService.GetTripsAsync(CancellationToken.None);
         var clientTrips = await _clientService.GetClientTripsAsync(id, CancellationToken.None);
-        var result = ClientTripMapper.MapClientTrips(trips, clientTrips);
+        var result = ClientMapper.MapClientTrips(trips, clientTrips);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateClientAsync(ClientCreateRequestDto clientDto,
+        CancellationToken cancellationToken)
+    {
+        var result = await _clientService.CreateClientAsync(clientDto, cancellationToken);
         return Ok(result);
     }
 }
