@@ -19,4 +19,19 @@ public class TripService : ITripService
         var trips = await _tripRepository.GetTripsAsync(cancellationToken);
         return trips.Select(trip => TripMapper.MapTrip(trip)).ToList();
     }
+
+    public async Task<bool> ValidateTripAsync(int id, CancellationToken cancellationToken)
+    {
+        if (!await _tripRepository.CheckIfTripExistsAsync(id, cancellationToken))
+        {
+            throw new ArgumentException($"Trip with id - {id} not found");
+        }
+
+        if (await _tripRepository.CheckIfTripHasMaxPeopleAsync(id, cancellationToken))
+        {
+            throw new ArgumentException($"Trip with id - {id} has max people");
+        }
+
+        return true;
+    }
 }

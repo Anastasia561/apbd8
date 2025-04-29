@@ -34,4 +34,14 @@ public class ClientsController : ControllerBase
         var result = await _clientService.CreateClientAsync(clientDto, cancellationToken);
         return Ok(result);
     }
+
+    [HttpPut("{id}/trips/{tripId}")]
+    public async Task<IActionResult> RegisterForTripAsync(int id, int tripId, CancellationToken cancellationToken)
+    {
+        if (!await _tripService.ValidateTripAsync(tripId, cancellationToken) ||
+            !await _clientService.ValidateClientAsync(id, cancellationToken)) return BadRequest();
+
+        await _clientService.RegisterClientForTripAsync(id, tripId, cancellationToken);
+        return Ok();
+    }
 }

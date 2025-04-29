@@ -12,6 +12,47 @@ public class TripRepository : ITripRepository
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
+    public async Task<bool> CheckIfTripExistsAsync(int id, CancellationToken cancellationToken)
+    {
+        var con = new SqlConnection(_connectionString);
+        await con.OpenAsync(cancellationToken);
+
+        var com = new SqlCommand("select count(*) from Trip where IdTrip=@id", con);
+        com.Parameters.AddWithValue("@id", id);
+
+        var result = (int)await com.ExecuteScalarAsync(cancellationToken);
+
+        await con.DisposeAsync();
+        return result > 0;
+    }
+
+    public async Task<bool> CheckIfTripHasMaxPeopleAsync(int id, CancellationToken cancellationToken)
+    {
+        var con = new SqlConnection(_connectionString);
+        await con.OpenAsync(cancellationToken);
+
+        var com = new SqlCommand("select count(*) from Client_Trip where IdTrip=@id", con);
+        com.Parameters.AddWithValue("@id", id);
+
+        var peopleRegistered = (int)await com.ExecuteScalarAsync(cancellationToken);
+        var maxPeople = await GetMaxNumberOfPeopleForTripAsync(id, cancellationToken);
+        await con.DisposeAsync();
+        return peopleRegistered >= maxPeople;
+    }
+
+    private async Task<int> GetMaxNumberOfPeopleForTripAsync(int id, CancellationToken cancellationToken)
+    {
+        var con = new SqlConnection(_connectionString);
+        await con.OpenAsync(cancellationToken);
+
+        var com = new SqlCommand("select MaxPeople from Trip where IdTrip=@id", con);
+        com.Parameters.AddWithValue("@id", id);
+
+        var result = (int)await com.ExecuteScalarAsync(cancellationToken);
+        await con.DisposeAsync();
+        return result;
+    }
+
     public async Task<IEnumerable<Trip>> GetTripsAsync(CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);

@@ -13,7 +13,23 @@ public class ClientRepository : IClientRepository
         _connectionString = configuration.GetConnectionString("DefaultConnection");
     }
 
-    public async Task<int> CreateClient(Client client, CancellationToken cancellationToken)
+    public async Task UpdateClientTripAsync(int clientId, int tripId, CancellationToken cancellationToken)
+    {
+        var con = new SqlConnection(_connectionString);
+        await con.OpenAsync(cancellationToken);
+
+        var registeredAtDate = DateOnly.FromDateTime(DateTime.Now);
+        var registeredAt = int.Parse(registeredAtDate.ToString("yyyyMMdd"));
+        var com = new SqlCommand("insert into client_trip(IdClient, IdTrip, RegisteredAt)" +
+                                 "values(@idClient, @idTrip, @registeredAt)",
+            con);
+        com.Parameters.AddWithValue("@idClient", clientId);
+        com.Parameters.AddWithValue("@idTrip", tripId);
+        com.Parameters.AddWithValue("@registeredAt", registeredAt);
+        await com.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    public async Task<int> CreateClientAsync(Client client, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
         await con.OpenAsync(cancellationToken);
@@ -75,7 +91,7 @@ public class ClientRepository : IClientRepository
         return clientTrips;
     }
 
-    private async Task<bool> CheckIfClientExistsAsync(int id, CancellationToken cancellationToken)
+    public async Task<bool> CheckIfClientExistsAsync(int id, CancellationToken cancellationToken)
     {
         var con = new SqlConnection(_connectionString);
         await con.OpenAsync(cancellationToken);

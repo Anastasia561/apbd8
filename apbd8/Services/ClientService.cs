@@ -14,6 +14,11 @@ public class ClientService : IClientService
         _clientRepository = clientRepository;
     }
 
+    public async Task<bool> ValidateClientAsync(int id, CancellationToken cancellationToken)
+    {
+        return await _clientRepository.CheckIfClientExistsAsync(id, cancellationToken);
+    }
+
     public async Task<IEnumerable<ClientTrip>> GetClientTripsAsync(int id, CancellationToken cancellationToken)
     {
         return await _clientRepository.GetClientTripAsync(id, cancellationToken);
@@ -28,6 +33,11 @@ public class ClientService : IClientService
             throw new ArgumentException("Invalid client data provided");
         }
 
-        return await _clientRepository.CreateClient(client, cancellationToken);
+        return await _clientRepository.CreateClientAsync(client, cancellationToken);
+    }
+
+    public async Task RegisterClientForTripAsync(int clientId, int tripId, CancellationToken cancellationToken)
+    {
+        await _clientRepository.UpdateClientTripAsync(clientId, tripId, cancellationToken);
     }
 }
