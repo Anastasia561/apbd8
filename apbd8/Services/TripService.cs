@@ -17,6 +17,6 @@ public class TripService : ITripService
     public async Task<IEnumerable<TripDto>> GetTripsAsync(CancellationToken cancellationToken)
     {
         var trips = await _tripRepository.GetTripsAsync(cancellationToken);
-        return TripMapper.MapTrips(trips);
+        return trips.Select(trip => TripMapper.MapTrip(trip)).ToList();
     }
 }
